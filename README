@@ -1,0 +1,4 @@
+$ ruby getrss.rb
+$ ruby get_image_url_from_rss.rb
+$ ruby save_images_from_rss.rb
+
