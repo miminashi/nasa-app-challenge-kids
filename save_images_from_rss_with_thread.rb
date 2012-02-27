@@ -9,15 +9,19 @@ require 'open-uri'
 require 'rss'
 require 'pp'
 
+threads = []
 rss = open('http://sdo.gsfc.nasa.gov/data/aiahmi/browse/xml/aia_0193.rss') {|f| RSS::Parser.parse(f.read)}
 rss.channel.items.each do |item|
   url = item.link
-  filename = File.basename(URI.parse(url).path)
-  puts "saving #{url}"
-  open(url) do |data|
-    File.open('images/' + filename, 'wb') do |f|
-      f.write(data.read)
+  threads << Thread.new(url) do |url|
+    filename = File.basename(URI.parse(url).path)
+    puts "saving #{url}"
+    open(url) do |data|
+      File.open('images/' + filename, 'wb') do |f|
+        f.write(data.read)
+      end
     end
   end
 end
+threads.each{|t| t.join}
 
